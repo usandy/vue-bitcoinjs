@@ -1,0 +1,25 @@
+{
+  "name": "nuxt-app",
+  "version": "1.0.0",
+  "description": "My groovy Nuxt.js project",
+  "author": "Andrey Vasiliev",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "assert": "^1.4.1",
+    "bip32": "^1.0.2",
+    "bip39": "^2.5.0",
+    "bitcoinjs-lib": "^4.0.2",
+    "element-ui": "^2.4.7",
+    "nuxt": "^1.0.0"
+  },
+  "devDependencies": {
+    "babel-plugin-component": "^1.1.1",
+    "cross-env": "^5.0.1"
+  }
+}
