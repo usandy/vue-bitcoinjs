@@ -40,6 +40,22 @@
                 </el-card>
                 <el-card class="box-card">
                     <div slot="header" class="clearfix">
+                        <span>Coin</span>
+                    </div>
+                    <div class="text item">
+                        <el-select v-model="coin" filterable placeholder="Select">
+                            <el-option
+                                    v-for="item in networksCoin"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value"
+                                    :disabled="item.disabled">
+                            </el-option>
+                        </el-select>
+                    </div>
+                </el-card>
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
                         <span>Words count</span>
                     </div>
                     <div class="text item">
@@ -202,7 +218,20 @@ export default {
                 value: 24,
                 label: 24
             }
-        ]
+        ];
+        const networksCoins=[
+
+            {
+                label: 'BTC - Bitcoin',
+                value: 0,
+                network: bitcoin.networks.bitcoin
+            },
+            {
+                label: 'BTC - Bitcoin Testnet',
+                value: 1,
+                network: bitcoin.networks.testnet
+            }
+        ];
 
         return{
           mnemonic: bip39.generateMnemonic(15 / 3 * 32),
@@ -217,7 +246,8 @@ export default {
             purpose: 44,
             coin: 0,
             account:0,
-            external:0
+            external:0,
+            networksCoin: networksCoins
         }
     },
     methods:{
@@ -276,6 +306,11 @@ export default {
         this.node = bip32.fromSeed(this.mnemonicToSeed);
         this.string = this.node.toBase58();
         this.restored = bip32.fromBase58(this.string);
+    },
+    watch:{
+        coin(val){
+            this.network = this.networksCoin.filter((item)=> item.value == val)[0].network;
+        }
     },
     computed:{
         mnemonicToSeed(){
