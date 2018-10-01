@@ -75,14 +75,7 @@
                         <el-button @click="testBitcoin">Regenerate Mnemonic</el-button>
                     </div>
                 </el-card>
-                <!--<el-table :data="tableData">-->
-                    <!--<el-table-column prop="date" label="Date" width="140">-->
-                    <!--</el-table-column>-->
-                    <!--<el-table-column prop="name" label="Name" width="120">-->
-                    <!--</el-table-column>-->
-                    <!--<el-table-column prop="address" label="Address">-->
-                    <!--</el-table-column>-->
-                <!--</el-table>-->
+
             </el-main>
             <el-container>
                 <el-header style="text-align: left; font-size: 24px">
@@ -181,6 +174,36 @@
                 </el-tabs>
 
             </el-container>
+            <el-card class="box-card">
+            <el-container>
+                <el-header style="text-align: left; font-size: 24px">
+                    <span>Derived Addresses</span>
+                </el-header>
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
+                        <span>Count row</span>
+                    </div>
+                    <div class="text item">
+                        <el-input v-model="countRow"></el-input>
+                    </div>
+                </el-card>
+                <el-card class="box-card">
+
+
+            <el-table :data="tableData">
+                <el-table-column prop="path" label="Path" >
+                </el-table-column>
+            <el-table-column prop="address" label="Address" >
+            </el-table-column>
+            <el-table-column prop="publicKey" label="Public key" >
+            </el-table-column>
+            <el-table-column prop="privateKey" label="Private Key">
+            </el-table-column>
+            </el-table>
+                </el-card>
+
+            </el-container>
+            </el-card>
         </el-container>
 
     </el-container>
@@ -247,19 +270,19 @@ export default {
             coin: 0,
             account:0,
             external:0,
-            networksCoin: networksCoins
+            networksCoin: networksCoins,
+            tableData:[],
+            countRow:20
         }
     },
     methods:{
         testBitcoin: function () {
             this.mnemonic = bip39.generateMnemonic(this.wordsCountComp);
-            console.log(this.getDerivationPath(true));
         },
         getAddress: function(node, network) {
             return bitcoin.payments.p2pkh({ pubkey: node.publicKey, network }).address
         },
         handleClick(tab, event) {
-            console.log(tab);
             this.purpose = +tab.name.substr(3,4)
         },
         calcBip32ExtendedKey(path){
@@ -310,6 +333,24 @@ export default {
     watch:{
         coin(val){
             this.network = this.networksCoin.filter((item)=> item.value == val)[0].network;
+        },
+        countRow: {
+            immediate: true,
+            handler: function(val) {
+                let table = [];
+                for (let i = 0; i < val; i++) {
+                    let key = this.calcBip32ExtendedKey(this.getDerivationPath()).derive(i);
+                    table.push({
+                        path: this.getDerivationPath() + "/" + i,
+                        address: this.getAddress(key, this.network),
+                        publicKey: key.publicKey.toString('hex'),
+                        privateKey: key.toWIF()
+                    })
+
+                }
+                this.tableData = [...table]
+
+            }
         }
     },
     computed:{
